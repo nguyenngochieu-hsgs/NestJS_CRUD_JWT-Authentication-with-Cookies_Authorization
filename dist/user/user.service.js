@@ -5,13 +5,67 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
+const user_entity_1 = require("./user.entity");
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const argon2 = require("argon2");
 let UserService = class UserService {
+    constructor(userRepository) {
+        this.userRepository = userRepository;
+    }
+    async validate(username, password) {
+        const user = await this.userRepository.findOne({ where: { username } });
+        if (user) {
+            const matchPassword = await argon2.verify(user.password, password);
+            if (matchPassword) {
+                return user;
+            }
+        }
+        return null;
+    }
+    async create(createUserDto) {
+        const { username, password } = createUserDto;
+        const existedUser = await this.userRepository.findOne({ where: { username: username } });
+        if (existedUser) {
+            throw new common_1.HttpException('Username has already been used', common_1.HttpStatus.BAD_REQUEST);
+        }
+        let newUser = new user_entity_1.UserEntity();
+        newUser.username = username;
+        newUser.password = password;
+        newUser.tasks = [];
+        try {
+            newUser = await this.userRepository.save(newUser);
+            const result = {
+                userId: newUser.id,
+                username: newUser.username,
+            };
+            return result;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async findById(id) {
+        const user = await this.userRepository.findOne({ where: { id: id } });
+        return {
+            id: user.id,
+            username: user.username
+        };
+    }
 };
 UserService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], UserService);
 exports.UserService = UserService;
 //# sourceMappingURL=user.service.js.map

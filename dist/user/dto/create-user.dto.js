@@ -9,29 +9,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TaskEntity = void 0;
-const user_entity_1 = require("../user/user.entity");
-const typeorm_1 = require("typeorm");
-let TaskEntity = class TaskEntity {
-};
+exports.CreateUserDto = void 0;
+const class_validator_1 = require("class-validator");
+class CreateUserDto {
+}
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], TaskEntity.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], TaskEntity.prototype, "title", void 0);
+], CreateUserDto.prototype, "username", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: '' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], TaskEntity.prototype, "description", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.UserEntity, user => user.tasks),
-    __metadata("design:type", user_entity_1.UserEntity)
-], TaskEntity.prototype, "user", void 0);
-TaskEntity = __decorate([
-    (0, typeorm_1.Entity)('task')
-], TaskEntity);
-exports.TaskEntity = TaskEntity;
-//# sourceMappingURL=task.entity.js.map
+], CreateUserDto.prototype, "password", void 0);
+exports.CreateUserDto = CreateUserDto;
+//# sourceMappingURL=create-user.dto.js.map
